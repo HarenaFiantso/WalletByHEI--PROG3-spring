@@ -18,6 +18,20 @@ public class Currency {
     this.currencyCode = currencyCode;
   }
 
+  public Currency(CurrencyNameType currencyName, CurrencyCodeType currencyCode) {
+    this.currencyName = currencyName;
+    this.currencyCode = currencyCode;
+  }
+
+  @Override
+  public String toString() {
+    return "Currency{" +
+        "currencyId='" + currencyId + '\'' +
+        ", currencyName=" + currencyName +
+        ", currencyCode=" + currencyCode +
+        '}';
+  }
+
   public Currency() {
 
   }
