@@ -10,8 +10,7 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "currency")
 public class Currency {
-  @Id
-  private String currencyId;
+  @Id private String currencyId;
 
   @Column(name = "currency_name")
   private CurrencyNameType currencyName;
@@ -30,8 +29,7 @@ public class Currency {
     this.currencyCode = currencyCode;
   }
 
-  public Currency() {
-  }
+  public Currency() {}
 
   public String getCurrencyId() {
     return currencyId;
