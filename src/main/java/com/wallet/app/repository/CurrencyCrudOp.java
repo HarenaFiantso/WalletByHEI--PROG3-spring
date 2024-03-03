@@ -2,12 +2,15 @@ package com.wallet.app.repository;
 
 import com.wallet.app.repository.conf.DatabaseConnection;
 import com.wallet.app.repository.model.Currency;
+import com.wallet.app.repository.model.type.CurrencyCodeType;
+import com.wallet.app.repository.model.type.CurrencyNameType;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -55,7 +58,33 @@ public class CurrencyCrudOp implements CrudOperations<Currency> {
 
   @Override
   public List<Currency> findAll() {
-    return null;
+    List<Currency> currencies = new ArrayList<>();
+    Connection connection = null;
+    PreparedStatement statement = null;
+    ResultSet resultSet = null;
+
+    try {
+      connection = DatabaseConnection.getConnection();
+
+      statement = connection.prepareStatement(SELECT_ALL_QUERY);
+      resultSet = statement.executeQuery();
+
+      while (resultSet.next()) {
+        Currency currency = new Currency();
+        currency.setCurrencyId(resultSet.getString(CURRENCY_ID_COLUMN));
+        currency.setCurrencyName(
+            CurrencyNameType.valueOf(resultSet.getString(CURRENCY_NAME_COLUMN)));
+        currency.setCurrencyCode(
+            CurrencyCodeType.valueOf(resultSet.getString(CURRENCY_CODE_COLUMN)));
+
+        currencies.add(currency);
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to retrieve currencies : " + e.getMessage());
+    } finally {
+      closeResources(connection, statement, resultSet);
+    }
+    return currencies;
   }
 
   @Override
