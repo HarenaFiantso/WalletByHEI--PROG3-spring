@@ -2,11 +2,16 @@ package com.wallet.app.repository;
 
 import com.wallet.app.db.DBConnection;
 import com.wallet.app.db.entity.Currency;
-import java.sql.*;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class CurrencyRepository implements CrudRepository<Currency> {
@@ -18,6 +23,7 @@ public class CurrencyRepository implements CrudRepository<Currency> {
 
   private static final String SELECT_BY_ID_QUERY =
       "SELECT * FROM currency WHERE currency_id::text = ?";
+  private static final String SELECT_ALL_QUERY = "SELECT * FROM currency";
 
   @Override
   public Currency findById(String toFind) {
@@ -53,7 +59,33 @@ public class CurrencyRepository implements CrudRepository<Currency> {
 
   @Override
   public List<Currency> findAll() {
-    return null;
+    List<Currency> currencies = new ArrayList<>();
+    Connection connection = null;
+    PreparedStatement statement = null;
+    ResultSet resultSet = null;
+
+    try {
+      connection = DBConnection.getConnection();
+
+      statement = connection.prepareStatement(SELECT_ALL_QUERY);
+      resultSet = statement.executeQuery();
+
+      while (resultSet.next()) {
+        Currency currency = new Currency(
+            resultSet.getString(CURRENCY_ID_COLUMN),
+            resultSet.getString(CURRENCY_NAME_COLUMN),
+            resultSet.getString(CURRENCY_CODE_COLUMN)
+        );
+
+        currencies.add(currency);
+      }
+      logger.info("Currencies retrieved successfully ✅");
+    } catch (SQLException e) {
+      logger.error("Failed to retrieve currencies ❌: {}", e.getMessage());
+    } finally {
+      closeResources(connection, statement, resultSet);
+    }
+    return currencies;
   }
 
   @Override
@@ -67,9 +99,11 @@ public class CurrencyRepository implements CrudRepository<Currency> {
   }
 
   @Override
-  public void delete(String toDelete) {}
+  public void delete(String toDelete) {
+  }
 
   @Override
   public void closeResources(
-      Connection connection, PreparedStatement statement, ResultSet resultSet) {}
+      Connection connection, PreparedStatement statement, ResultSet resultSet) {
+  }
 }

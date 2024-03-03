@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/currency")
@@ -23,5 +25,11 @@ public class CurrencyController {
     } else {
       return ResponseEntity.notFound().build();
     }
+  }
+
+  @GetMapping("/")
+  public ResponseEntity<List<Currency>> getAllCurrencies() {
+    List<Currency> currencies = currencyService.getCurrencies();
+    return ResponseEntity.ok(currencies);
   }
 }
