@@ -16,5 +16,7 @@ public interface CrudOperations<T> {
 
   T delete(T toDelete);
 
+  T executeQuery(String query, String id, String errorMessage);
+
   void closeResources(Connection connection, PreparedStatement statement, ResultSet resultSet);
 }

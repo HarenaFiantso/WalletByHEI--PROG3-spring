@@ -4,14 +4,10 @@ import com.wallet.app.repository.conf.DatabaseConnection;
 import com.wallet.app.repository.model.Currency;
 import com.wallet.app.repository.model.type.CurrencyCodeType;
 import com.wallet.app.repository.model.type.CurrencyNameType;
-import org.springframework.stereotype.Repository;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class CurrencyCrudOp implements CrudOperations<Currency> {
@@ -31,29 +27,8 @@ public class CurrencyCrudOp implements CrudOperations<Currency> {
 
   @Override
   public Currency findById(Currency toFind) {
-    Currency currency = null;
-    Connection connection = null;
-    PreparedStatement statement = null;
-    ResultSet resultSet = null;
-
-    try {
-      connection = DatabaseConnection.getConnection();
-
-      statement = connection.prepareStatement(SELECT_BY_ID_QUERY);
-      statement.setString(1, toFind.getCurrencyId());
-
-      resultSet = statement.executeQuery();
-
-      if (resultSet.next()) {
-        currency = new Currency();
-        currency.setCurrencyId(resultSet.getString(CURRENCY_ID_COLUMN));
-      }
-    } catch (SQLException e) {
-      throw new RuntimeException("Failed to retrieve currency : " + e.getMessage());
-    } finally {
-      closeResources(connection, statement, resultSet);
-    }
-    return currency;
+    return executeQuery(
+        SELECT_BY_ID_QUERY, toFind.getCurrencyId(), "Failed to retrieve currency :");
   }
 
   @Override
@@ -101,12 +76,78 @@ public class CurrencyCrudOp implements CrudOperations<Currency> {
 
   @Override
   public Currency save(Currency toSave) {
+    Connection connection = null;
+    PreparedStatement statement = null;
+    ResultSet resultSet = null;
+
+    String QUERY;
+    boolean isNewCurrency = toSave.getCurrencyId() == null;
+
+    try {
+      connection = DatabaseConnection.getConnection();
+      if (isNewCurrency) {
+        QUERY = INSERT_QUERY;
+        statement = connection.prepareStatement(QUERY, Statement.RETURN_GENERATED_KEYS);
+        statement.setString(1, String.valueOf(toSave.getCurrencyName()));
+        statement.setString(2, String.valueOf(toSave.getCurrencyCode()));
+      } else {
+        QUERY = UPDATE_QUERY;
+        statement = connection.prepareStatement(QUERY);
+        statement.setString(1, String.valueOf(toSave.getCurrencyName()));
+        statement.setString(2, String.valueOf(toSave.getCurrencyCode()));
+        statement.setString(3, toSave.getCurrencyId());
+      }
+
+      boolean isResultSet = statement.execute();
+
+      if (isResultSet) {
+        resultSet = statement.getResultSet();
+
+        if (resultSet.next()) {
+          Currency savedCurrency = new Currency();
+          savedCurrency.setCurrencyName(
+              CurrencyNameType.valueOf(resultSet.getString(CURRENCY_NAME_COLUMN)));
+          savedCurrency.setCurrencyCode(
+              CurrencyCodeType.valueOf(resultSet.getString(CURRENCY_CODE_COLUMN)));
+
+          return savedCurrency;
+        }
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException("Failed to save currency : " + e.getMessage());
+    } finally {
+      closeResources(connection, statement, resultSet);
+    }
     return null;
   }
 
   @Override
   public Currency delete(Currency toDelete) {
-    return null;
+    return executeQuery(DELETE_QUERY, toDelete.getCurrencyId(), "Failed to delete currency");
+  }
+
+  @Override
+  public Currency executeQuery(String query, String id, String errorMessage) {
+    Currency currency = null;
+
+    try (Connection connection = DatabaseConnection.getConnection();
+        PreparedStatement statement = connection.prepareStatement(query)) {
+
+      statement.setString(1, id);
+
+      try (ResultSet resultSet = statement.executeQuery()) {
+        if (resultSet.next()) {
+          currency = new Currency();
+          currency.setCurrencyId(resultSet.getString(CURRENCY_ID_COLUMN));
+        }
+      }
+
+    } catch (SQLException e) {
+      System.err.println("SQL Error: " + e.getMessage());
+      throw new RuntimeException(errorMessage + e.getMessage(), e);
+    }
+
+    return currency;
   }
 
   @Override
