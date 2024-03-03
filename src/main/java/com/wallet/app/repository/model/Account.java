@@ -1,6 +1,6 @@
-package com.wallet.app.model;
+package com.wallet.app.repository.model;
 
-import com.wallet.app.model.type.AccountType;
+import com.wallet.app.repository.model.type.AccountType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 

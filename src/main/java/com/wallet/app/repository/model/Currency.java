@@ -1,7 +1,7 @@
-package com.wallet.app.model;
+package com.wallet.app.repository.model;
 
-import com.wallet.app.model.type.CurrencyCodeType;
-import com.wallet.app.model.type.CurrencyNameType;
+import com.wallet.app.repository.model.type.CurrencyCodeType;
+import com.wallet.app.repository.model.type.CurrencyNameType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

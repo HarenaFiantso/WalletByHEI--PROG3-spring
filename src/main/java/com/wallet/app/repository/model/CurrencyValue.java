@@ -1,4 +1,4 @@
-package com.wallet.app.model;
+package com.wallet.app.repository.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
