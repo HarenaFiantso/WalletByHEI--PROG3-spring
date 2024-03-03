@@ -10,7 +10,9 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "currency")
 public class Currency {
-  @Id private String currencyId;
+  @Id
+  @Column(name = "currency_id")
+  private String currencyId;
 
   @Column(name = "currency_name")
   private CurrencyNameType currencyName;

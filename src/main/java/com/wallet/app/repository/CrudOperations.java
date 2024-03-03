@@ -1,5 +1,8 @@
 package com.wallet.app.repository;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.List;
 
 public interface CrudOperations<T> {
@@ -7,9 +10,11 @@ public interface CrudOperations<T> {
 
   List<T> findAll();
 
-  int save(T toSave);
+  List<T> saveAll(List<T> toSave);
 
-  int update(T toUpdate);
+  T save(T toSave);
 
-  void delete(T toDelete);
+  T delete(T toDelete);
+
+  void closeResources(Connection connection, PreparedStatement statement, ResultSet resultSet);
 }
