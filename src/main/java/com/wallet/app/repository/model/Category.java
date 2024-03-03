@@ -1,33 +1,18 @@
 package com.wallet.app.repository.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Table;
 
-@Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "category")
 public class Category {
   @Id private String categoryId;
-  private String CategoryName;
-
-  public Category(String categoryId, String categoryName) {
-    this.categoryId = categoryId;
-    CategoryName = categoryName;
-  }
-
-  public Category() {}
-
-  public String getCategoryId() {
-    return categoryId;
-  }
-
-  public void setCategoryId(String categoryId) {
-    this.categoryId = categoryId;
-  }
-
-  public String getCategoryName() {
-    return CategoryName;
-  }
-
-  public void setCategoryName(String categoryName) {
-    CategoryName = categoryName;
-  }
+  private String categoryName;
 }
