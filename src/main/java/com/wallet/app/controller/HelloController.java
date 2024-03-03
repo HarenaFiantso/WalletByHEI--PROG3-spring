@@ -10,8 +10,8 @@ public class HelloController {
   }
 
   @GetMapping("/hello")
-  public String ping(@RequestParam(required = false) Integer page,
-                     @RequestParam(required = false) Integer size) {
+  public String ping(
+      @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
     return "This is a GET request with params page = " + page + " and size=" + size;
   }
 

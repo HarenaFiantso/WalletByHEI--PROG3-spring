@@ -1,8 +1,8 @@
 package com.wallet.app.repository;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.List;
 
 public interface CrudRepository<T> {
@@ -16,5 +16,5 @@ public interface CrudRepository<T> {
 
   void delete(String toDelete);
 
-  void closeResources(Connection connection, Statement statement, ResultSet resultSet);
+  void closeResources(Connection connection, PreparedStatement statement, ResultSet resultSet);
 }
