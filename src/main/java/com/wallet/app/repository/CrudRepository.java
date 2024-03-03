@@ -10,11 +10,9 @@ public interface CrudRepository<T> {
 
   List<T> findAll();
 
-  List<T> saveAll(List<T> toSave);
+  T save(T toSave);
 
-  T save(String toSave);
-
-  void delete(String toDelete);
+  T delete(String toDelete);
 
   void closeResources(Connection connection, PreparedStatement statement, ResultSet resultSet);
 }

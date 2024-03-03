@@ -2,24 +2,20 @@ package com.wallet.app.controller;
 
 import com.wallet.app.db.entity.Currency;
 import com.wallet.app.service.CurrencyService;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/currency")
+@RequestMapping("/api/currencies")
 public class CurrencyController {
   private final CurrencyService currencyService;
 
   @GetMapping("/{id}")
   public ResponseEntity<Currency> getCurrencyById(@PathVariable String id) {
-    Currency currency = currencyService.getCurrencyById(id);
+    Currency currency = currencyService.retrieveCurrencyById(id);
     if (currency != null) {
       return ResponseEntity.ok(currency);
     } else {
@@ -27,9 +23,30 @@ public class CurrencyController {
     }
   }
 
-  @GetMapping("/")
+  @GetMapping("/all")
   public ResponseEntity<List<Currency>> getAllCurrencies() {
-    List<Currency> currencies = currencyService.getCurrencies();
+    List<Currency> currencies = currencyService.retrieveAllCurrencies();
     return ResponseEntity.ok(currencies);
+  }
+
+  @PostMapping("/create")
+  public ResponseEntity<Currency> createCurrency(@RequestBody Currency toSave) {
+    Currency savedCurrency = currencyService.createCurrency(toSave);
+
+    if (savedCurrency != null) {
+      return ResponseEntity.ok(savedCurrency);
+    } else {
+      return ResponseEntity.badRequest().build();
+    }
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Currency> deleteCurrency(@PathVariable String id) {
+    Currency deletedCurrency = currencyService.deleteCurrencyById(id);
+    if (deletedCurrency != null) {
+      return ResponseEntity.ok(deletedCurrency);
+    } else {
+      return ResponseEntity.notFound().build();
+    }
   }
 }
