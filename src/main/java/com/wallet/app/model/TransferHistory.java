@@ -2,27 +2,27 @@ package com.wallet.app.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-
 import java.sql.Timestamp;
 
 @Entity
 public class TransferHistory {
-  @Id
-  private String transferHistoryId;
+  @Id private String transferHistoryId;
   private Timestamp transferDate;
   private String debitTransactionId;
   private String creditTransactionId;
 
-  public TransferHistory(String transferHistoryId, Timestamp transferDate, String debitTransactionId, String creditTransactionId) {
+  public TransferHistory(
+      String transferHistoryId,
+      Timestamp transferDate,
+      String debitTransactionId,
+      String creditTransactionId) {
     this.transferHistoryId = transferHistoryId;
     this.transferDate = transferDate;
     this.debitTransactionId = debitTransactionId;
     this.creditTransactionId = creditTransactionId;
   }
 
-  public TransferHistory() {
-
-  }
+  public TransferHistory() {}
 
   public String getTransferHistoryId() {
     return transferHistoryId;

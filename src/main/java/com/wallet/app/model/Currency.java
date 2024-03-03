@@ -2,14 +2,21 @@ package com.wallet.app.model;
 
 import com.wallet.app.model.type.CurrencyCodeType;
 import com.wallet.app.model.type.CurrencyNameType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "currency")
 public class Currency {
   @Id
   private String currencyId;
+
+  @Column(name = "currency_name")
   private CurrencyNameType currencyName;
+
+  @Column(name = "currency_code")
   private CurrencyCodeType currencyCode;
 
   public Currency(String currencyId, CurrencyNameType currencyName, CurrencyCodeType currencyCode) {
@@ -23,17 +30,7 @@ public class Currency {
     this.currencyCode = currencyCode;
   }
 
-  @Override
-  public String toString() {
-    return "Currency{" +
-        "currencyId='" + currencyId + '\'' +
-        ", currencyName=" + currencyName +
-        ", currencyCode=" + currencyCode +
-        '}';
-  }
-
   public Currency() {
-
   }
 
   public String getCurrencyId() {
@@ -58,5 +55,18 @@ public class Currency {
 
   public void setCurrencyCode(CurrencyCodeType currencyCode) {
     this.currencyCode = currencyCode;
+  }
+
+  @Override
+  public String toString() {
+    return "Currency{"
+        + "currencyId='"
+        + currencyId
+        + '\''
+        + ", currencyName="
+        + currencyName
+        + ", currencyCode="
+        + currencyCode
+        + '}';
   }
 }

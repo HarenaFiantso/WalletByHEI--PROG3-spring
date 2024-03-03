@@ -5,8 +5,7 @@ import jakarta.persistence.Id;
 
 @Entity
 public class Category {
-  @Id
-  private String categoryId;
+  @Id private String categoryId;
   private String CategoryName;
 
   public Category(String categoryId, String categoryName) {
@@ -14,9 +13,7 @@ public class Category {
     CategoryName = categoryName;
   }
 
-  public Category() {
-
-  }
+  public Category() {}
 
   public String getCategoryId() {
     return categoryId;

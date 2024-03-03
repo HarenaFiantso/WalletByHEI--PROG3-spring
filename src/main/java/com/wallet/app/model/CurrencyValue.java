@@ -2,19 +2,22 @@ package com.wallet.app.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-
 import java.time.LocalDateTime;
 
 @Entity
 public class CurrencyValue {
-  @Id
-  private String currencyValueId;
+  @Id private String currencyValueId;
   private LocalDateTime currencyValueDate;
   private Double exchangeRate;
   private String sourceCurrencyId;
   private String destinationCurrencyId;
 
-  public CurrencyValue(String currencyValueId, LocalDateTime currencyValueDate, Double exchangeRate, String sourceCurrencyId, String destinationCurrencyId) {
+  public CurrencyValue(
+      String currencyValueId,
+      LocalDateTime currencyValueDate,
+      Double exchangeRate,
+      String sourceCurrencyId,
+      String destinationCurrencyId) {
     this.currencyValueId = currencyValueId;
     this.currencyValueDate = currencyValueDate;
     this.exchangeRate = exchangeRate;
@@ -22,9 +25,7 @@ public class CurrencyValue {
     this.destinationCurrencyId = destinationCurrencyId;
   }
 
-  public CurrencyValue() {
-
-  }
+  public CurrencyValue() {}
 
   public String getCurrencyValueId() {
     return currencyValueId;

@@ -2,13 +2,11 @@ package com.wallet.app.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-
 import java.sql.Timestamp;
 
 @Entity
 public class Transaction {
-  @Id
-  private String transactionId;
+  @Id private String transactionId;
   private Timestamp transactionDate;
   private String transactionType;
   private Double amount;
@@ -16,7 +14,14 @@ public class Transaction {
   private String accountId;
   private String categoryId;
 
-  public Transaction(String transactionId, Timestamp transactionDate, String transactionType, Double amount, String label, String accountId, String categoryId) {
+  public Transaction(
+      String transactionId,
+      Timestamp transactionDate,
+      String transactionType,
+      Double amount,
+      String label,
+      String accountId,
+      String categoryId) {
     this.transactionId = transactionId;
     this.transactionDate = transactionDate;
     this.transactionType = transactionType;
@@ -26,9 +31,7 @@ public class Transaction {
     this.categoryId = categoryId;
   }
 
-  public Transaction() {
-
-  }
+  public Transaction() {}
 
   public String getTransactionId() {
     return transactionId;

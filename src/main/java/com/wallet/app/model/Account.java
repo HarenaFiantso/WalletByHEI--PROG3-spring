@@ -6,8 +6,7 @@ import jakarta.persistence.Id;
 
 @Entity
 public class Account {
-  @Id
-  private String accountId;
+  @Id private String accountId;
   private String accountName;
   private AccountType accountType;
   private String currencyId;
@@ -19,9 +18,7 @@ public class Account {
     this.currencyId = currencyId;
   }
 
-  public Account() {
-
-  }
+  public Account() {}
 
   public String getAccountId() {
     return accountId;
@@ -54,5 +51,4 @@ public class Account {
   public void setCurrencyId(String currencyId) {
     this.currencyId = currencyId;
   }
-  
 }
