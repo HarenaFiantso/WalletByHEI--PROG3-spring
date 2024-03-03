@@ -9,5 +9,7 @@ public interface CrudOperations<T> {
 
   int save(T toSave);
 
+  int update(T toUpdate);
+
   void delete(T toDelete);
 }

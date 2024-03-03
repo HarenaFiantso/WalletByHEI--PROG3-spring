@@ -2,7 +2,6 @@ package com.wallet.app.repository;
 
 import com.wallet.app.repository.model.Currency;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,6 +27,11 @@ public class CurrencyCrudOp implements CrudOperations<Currency> {
     return jdbcTemplate.update(
         "INSERT INTO currency (currency_name, currency_code) values (? ,?)",
         toSave.getCurrencyName(), toSave.getCurrencyCode());
+  }
+
+  @Override
+  public int update(Currency toUpdate) {
+    return 0;
   }
 
   @Override
