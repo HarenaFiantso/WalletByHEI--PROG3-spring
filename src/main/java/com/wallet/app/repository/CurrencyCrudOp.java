@@ -89,7 +89,14 @@ public class CurrencyCrudOp implements CrudOperations<Currency> {
 
   @Override
   public List<Currency> saveAll(List<Currency> toSave) {
-    return null;
+    List<Currency> savedCurrencies = new ArrayList<>();
+
+    for (Currency currency : toSave) {
+      Currency savedCurrency = this.save(currency);
+      savedCurrencies.add(savedCurrency);
+    }
+
+    return savedCurrencies;
   }
 
   @Override
