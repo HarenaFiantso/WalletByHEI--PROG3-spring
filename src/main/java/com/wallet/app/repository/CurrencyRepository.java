@@ -26,9 +26,6 @@ public class CurrencyRepository implements CrudRepository<Currency> {
   private static final String INSERT_QUERY =
       "INSERT INTO currency (currency_name, currency_code) VALUES (CAST(? AS currency_name), CAST(?"
           + " AS currency_code)) RETURNING *";
-  private static final String UPDATE_QUERY =
-      "UPDATE currency SET currency_name = CAST(? AS currency_name), currency_code = CAST(? AS"
-          + " currency_code) WHERE currency_id = ? RETURNING *";
   private static final String DELETE_QUERY = "DELETE FROM currency WHERE currency_id::text = ?";
 
   @Override
@@ -158,5 +155,19 @@ public class CurrencyRepository implements CrudRepository<Currency> {
 
   @Override
   public void closeResources(
-      Connection connection, PreparedStatement statement, ResultSet resultSet) {}
+      Connection connection, PreparedStatement statement, ResultSet resultSet) {
+    try {
+      if (resultSet != null) {
+        resultSet.close();
+      }
+      if (statement != null) {
+        statement.close();
+      }
+      if (connection != null) {
+        connection.close();
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }
