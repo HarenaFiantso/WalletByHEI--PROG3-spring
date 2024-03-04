@@ -1,10 +1,13 @@
 package com.wallet.app.db;
 
 import com.wallet.app.exception.DatabaseConnectionException;
+import org.springframework.context.annotation.Configuration;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+@Configuration
 public class DBConnection {
   private static final String url = System.getenv("DB_URL");
   private static final String username = System.getenv("DB_USER");
