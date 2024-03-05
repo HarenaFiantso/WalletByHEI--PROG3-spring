@@ -33,7 +33,7 @@ public class TransactionRepository implements CrudRepository<Transaction> {
           + ") VALUES (?, CAST(? AS transaction_type), ?, ?, ?) RETURNING *";
   private static final String UPDATE_QUERY =
       "UPDATE transaction SET transaction_date = ?, transaction_type = CAST(? AS account_type),"
-          + " amount = ?, label = ?, account_id = ? WHERE transaction_id = ?"
+          + " amount = ?, label = ?, account_id = ?, category_id = ? WHERE transaction_id = ?"
           + " RETURNING *";
   private static final String DELETE_QUERY = "DELETE FROM transaction WHERE transaction_id = ?";
 
@@ -54,7 +54,44 @@ public class TransactionRepository implements CrudRepository<Transaction> {
 
   @Override
   public Transaction update(Transaction toUpdate) {
-    return null;
+    Transaction transaction = null;
+    Connection connection = null;
+    PreparedStatement statement = null;
+    ResultSet resultSet = null;
+
+    try {
+      connection = DBConnection.getConnection();
+
+      statement = connection.prepareStatement(UPDATE_QUERY);
+      statement.setTimestamp(1, toUpdate.getTransactionDate());
+      statement.setString(2, toUpdate.getTransactionType());
+      statement.setDouble(3, toUpdate.getAmount());
+      statement.setString(4, toUpdate.getLabel());
+      statement.setString(5, toUpdate.getAccountId());
+      statement.setString(6, toUpdate.getCategoryId());
+      statement.setString(7, toUpdate.getTransactionId());
+
+      resultSet = statement.executeQuery();
+      if (resultSet.next()) {
+        transaction =
+            new Transaction(
+                resultSet.getString(TRANSACTION_ID_COLUMN),
+                resultSet.getTimestamp(TRANSACTION_DATE_COLUMN),
+                resultSet.getString(TRANSACTION_TYPE_COLUMN),
+                resultSet.getDouble(AMOUNT_COLUMN),
+                resultSet.getString(LABEL_COLUMN),
+                resultSet.getString(ACCOUNT_ID_COLUMN),
+                resultSet.getString(CATEGORY_ID_COLUMN));
+      }
+
+      logger.info("Transaction updated successfully ✅");
+    } catch (SQLException e) {
+      logger.error("Failed to update transaction ❌: {}", e.getMessage());
+    } finally {
+      closeResources(connection, statement, resultSet);
+    }
+
+    return transaction;
   }
 
   @Override
