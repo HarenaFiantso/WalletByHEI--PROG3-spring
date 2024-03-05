@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class AccountRepository implements CrudRepository<Account> {
-  private static final Logger logger = LoggerFactory.getLogger(CurrencyRepository.class);
+  private static final Logger logger = LoggerFactory.getLogger(AccountRepository.class);
 
   private static final String ACCOUNT_ID_COLUMN = "account_id";
   private static final String ACCOUNT_NAME_COLUMN = "account_name";
@@ -154,7 +154,7 @@ public class AccountRepository implements CrudRepository<Account> {
                 resultSet.getString(CURRENCY_ID_COLUMN));
       }
 
-      logger.info("Account deleted successfully ✅");
+      logger.info("Account updated successfully ✅");
     } catch (SQLException e) {
       logger.error("Failed to update account ❌: {}", e.getMessage());
     } finally {
