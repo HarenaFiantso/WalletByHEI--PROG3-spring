@@ -19,7 +19,8 @@ public class CategoryRepository implements CrudRepository<Category> {
   private static final String CATEGORY_ID_COLUMN = "category_id";
   private static final String CATEGORY_NAME_COLUMN = "category_name";
 
-  private static final String SELECT_ALL_QUERY = "SELECT * FROM account";
+  private static final String SELECT_BY_ID_QUERY = "SELECT * FROM category WHERE category_id = ?";
+  private static final String SELECT_ALL_QUERY = "SELECT * FROM category";
   private static final String INSERT_QUERY =
       "INSERT INTO category (category_name) VALUES (?) RETURNING *";
   private static final String UPDATE_QUERY =
@@ -28,7 +29,32 @@ public class CategoryRepository implements CrudRepository<Category> {
 
   @Override
   public Category findById(String toFind) {
-    return null;
+    Category category = null;
+    Connection connection = null;
+    PreparedStatement statement = null;
+    ResultSet resultSet = null;
+
+    try {
+      connection = DBConnection.getConnection();
+
+      statement = connection.prepareStatement(SELECT_BY_ID_QUERY);
+      statement.setString(1, toFind);
+
+      resultSet = statement.executeQuery();
+      if (resultSet.next()) {
+        category =
+            new Category(
+                resultSet.getString(CATEGORY_ID_COLUMN), resultSet.getString(CATEGORY_NAME_COLUMN));
+      }
+
+      logger.info("Category retrieved successfully ✅");
+    } catch (SQLException e) {
+      logger.error("Failed to retrieve category ❌: {}", e.getMessage());
+    } finally {
+      closeResources(connection, statement, resultSet);
+    }
+
+    return category;
   }
 
   @Override
@@ -51,7 +77,7 @@ public class CategoryRepository implements CrudRepository<Category> {
 
         categories.add(category);
       }
-      logger.info("categories retrieved successfully ✅");
+      logger.info("Categories retrieved successfully ✅");
     } catch (SQLException e) {
       logger.error("Failed to retrieve categories ❌: {}", e.getMessage());
     } finally {
