@@ -151,6 +151,8 @@ public class CurrencyRepository implements CrudRepository<Currency> {
       logger.info("Currency deleted successfully ✅");
     } catch (SQLException e) {
       logger.error("Failed to update currency ❌: {}", e.getMessage());
+    } finally {
+      closeResources(connection, statement, resultSet);
     }
 
     return currency;
