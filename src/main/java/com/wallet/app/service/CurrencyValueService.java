@@ -2,10 +2,9 @@ package com.wallet.app.service;
 
 import com.wallet.app.db.entity.CurrencyValue;
 import com.wallet.app.repository.CurrencyValueRepository;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @AllArgsConstructor
