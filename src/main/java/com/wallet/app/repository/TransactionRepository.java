@@ -1,18 +1,16 @@
 package com.wallet.app.repository;
 
 import com.wallet.app.db.DBConnection;
-import com.wallet.app.db.entity.Account;
 import com.wallet.app.db.entity.Transaction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Repository;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class TransactionRepository implements CrudRepository<Transaction> {
@@ -30,8 +28,8 @@ public class TransactionRepository implements CrudRepository<Transaction> {
       "SELECT * FROM transaction WHERE transaction_id = ?";
   private static final String SELECT_ALL_QUERY = "SELECT * FROM transaction";
   private static final String INSERT_QUERY =
-      "INSERT INTO transaction (transaction_date, transaction_type, amount, label, account_id, category_id"
-          + ") VALUES (?, CAST(? AS transaction_type), ?, ?, ?, ?) RETURNING *";
+      "INSERT INTO transaction (transaction_date, transaction_type, amount, label, account_id,"
+          + " category_id) VALUES (?, CAST(? AS transaction_type), ?, ?, ?, ?) RETURNING *";
   private static final String UPDATE_QUERY =
       "UPDATE transaction SET transaction_date = ?, transaction_type = CAST(? AS account_type),"
           + " amount = ?, label = ?, account_id = ?, category_id = ? WHERE transaction_id = ?"
@@ -40,7 +38,38 @@ public class TransactionRepository implements CrudRepository<Transaction> {
 
   @Override
   public Transaction findById(String toFind) {
-    return null;
+    Transaction transaction = null;
+    Connection connection = null;
+    PreparedStatement statement = null;
+    ResultSet resultSet = null;
+
+    try {
+      connection = DBConnection.getConnection();
+
+      statement = connection.prepareStatement(SELECT_BY_ID_QUERY);
+      statement.setString(1, toFind);
+
+      resultSet = statement.executeQuery();
+      if (resultSet.next()) {
+        transaction =
+            new Transaction(
+                resultSet.getString(TRANSACTION_ID_COLUMN),
+                resultSet.getTimestamp(TRANSACTION_DATE_COLUMN),
+                resultSet.getString(TRANSACTION_TYPE_COLUMN),
+                resultSet.getDouble(AMOUNT_COLUMN),
+                resultSet.getString(LABEL_COLUMN),
+                resultSet.getString(ACCOUNT_ID_COLUMN),
+                resultSet.getString(CATEGORY_ID_COLUMN));
+      }
+
+      logger.info("Transaction retrieved successfully ✅");
+    } catch (SQLException e) {
+      logger.error("Failed to retrieve transaction ❌: {}", e.getMessage());
+    } finally {
+      closeResources(connection, statement, resultSet);
+    }
+
+    return transaction;
   }
 
   @Override
@@ -195,7 +224,8 @@ public class TransactionRepository implements CrudRepository<Transaction> {
   }
 
   @Override
-  public void closeResources(Connection connection, PreparedStatement statement, ResultSet resultSet) {
+  public void closeResources(
+      Connection connection, PreparedStatement statement, ResultSet resultSet) {
     try {
       if (resultSet != null) {
         resultSet.close();
