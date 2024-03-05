@@ -23,6 +23,10 @@ public class CurrencyService {
     return currencyRepository.save(toSave);
   }
 
+  public Currency updateCurrency(Currency toUpdate) {
+    return currencyRepository.update(toUpdate);
+  }
+
   public Currency deleteCurrencyById(String toDelete) {
     return currencyRepository.delete(toDelete);
   }

@@ -40,6 +40,12 @@ public class CurrencyController {
     }
   }
 
+  @PutMapping("/update/{id}")
+  public Currency updateCurrency(@PathVariable String id, @RequestBody Currency toUpdate) {
+    toUpdate.setCurrencyId(id);
+    return currencyService.updateCurrency(toUpdate);
+  }
+
   @DeleteMapping("/{id}")
   public ResponseEntity<Currency> deleteCurrency(@PathVariable String id) {
     Currency deletedCurrency = currencyService.deleteCurrencyById(id);
