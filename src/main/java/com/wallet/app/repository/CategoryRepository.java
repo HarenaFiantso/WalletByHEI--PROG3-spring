@@ -20,6 +20,8 @@ public class CategoryRepository implements CrudRepository<Category> {
   private static final String CATEGORY_ID_COLUMN = "category_id";
   private static final String CATEGORY_NAME_COLUMN = "category_name";
 
+  private static final String INSERT_QUERY =
+      "INSERT INTO category (category_name) VALUES (?) RETURNING *";
   private static final String UPDATE_QUERY = "UPDATE category SET category_name = ? WHERE category_id = ?";
   private static final String DELETE_QUERY = "DELETE FROM category WHERE category_id = ?";
   @Override
@@ -34,6 +36,29 @@ public class CategoryRepository implements CrudRepository<Category> {
 
   @Override
   public Category save(Category toSave) {
+    Connection connection = null;
+    PreparedStatement statement = null;
+    ResultSet resultSet = null;
+
+    try {
+      connection = DBConnection.getConnection();
+
+      statement = connection.prepareStatement(INSERT_QUERY);
+      statement.setString(1, toSave.getCategoryName());
+
+      resultSet = statement.executeQuery();
+
+      if (resultSet.next()) {
+        return new Category(
+            resultSet.getString(CATEGORY_ID_COLUMN),
+            resultSet.getString(CATEGORY_NAME_COLUMN));
+      }
+      logger.info("Category saved successfully ✅");
+    } catch (SQLException e) {
+      logger.error("Failed to save category ❌: {}", e.getMessage());
+    } finally {
+      closeResources(connection, statement, resultSet);
+    }
     return null;
   }
 

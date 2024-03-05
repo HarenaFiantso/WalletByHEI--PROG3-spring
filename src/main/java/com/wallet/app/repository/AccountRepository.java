@@ -106,9 +106,9 @@ public class AccountRepository implements CrudRepository<Account> {
       connection = DBConnection.getConnection();
 
       statement = connection.prepareStatement(INSERT_QUERY);
-      statement.setString(1, String.valueOf(toSave.getAccountName()));
-      statement.setString(2, String.valueOf(toSave.getAccountType()));
-      statement.setString(3, String.valueOf(toSave.getCurrencyId()));
+      statement.setString(1, toSave.getAccountName());
+      statement.setString(2, toSave.getAccountType());
+      statement.setString(3, toSave.getCurrencyId());
 
       resultSet = statement.executeQuery();
 
