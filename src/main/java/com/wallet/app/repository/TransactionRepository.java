@@ -29,8 +29,8 @@ public class TransactionRepository implements CrudRepository<Transaction> {
       "SELECT * FROM transaction WHERE transaction_id = ?";
   private static final String SELECT_ALL_QUERY = "SELECT * FROM transaction";
   private static final String INSERT_QUERY =
-      "INSERT INTO transaction (transaction_date, transaction_type, amount, label, account_id"
-          + ") VALUES (?, CAST(? AS transaction_type), ?, ?, ?) RETURNING *";
+      "INSERT INTO transaction (transaction_date, transaction_type, amount, label, account_id, category_id"
+          + ") VALUES (?, CAST(? AS transaction_type), ?, ?, ?, ?) RETURNING *";
   private static final String UPDATE_QUERY =
       "UPDATE transaction SET transaction_date = ?, transaction_type = CAST(? AS account_type),"
           + " amount = ?, label = ?, account_id = ?, category_id = ? WHERE transaction_id = ?"
@@ -49,6 +49,39 @@ public class TransactionRepository implements CrudRepository<Transaction> {
 
   @Override
   public Transaction save(Transaction toSave) {
+    Connection connection = null;
+    PreparedStatement statement = null;
+    ResultSet resultSet = null;
+
+    try {
+      connection = DBConnection.getConnection();
+
+      statement = connection.prepareStatement(INSERT_QUERY);
+      statement.setTimestamp(1, toSave.getTransactionDate());
+      statement.setString(2, toSave.getTransactionType());
+      statement.setDouble(3, toSave.getAmount());
+      statement.setString(4, toSave.getLabel());
+      statement.setString(5, toSave.getAccountId());
+      statement.setString(6, toSave.getCategoryId());
+
+      resultSet = statement.executeQuery();
+
+      if (resultSet.next()) {
+        return new Transaction(
+            resultSet.getString(TRANSACTION_ID_COLUMN),
+            resultSet.getTimestamp(TRANSACTION_DATE_COLUMN),
+            resultSet.getString(TRANSACTION_TYPE_COLUMN),
+            resultSet.getDouble(AMOUNT_COLUMN),
+            resultSet.getString(LABEL_COLUMN),
+            resultSet.getString(ACCOUNT_ID_COLUMN),
+            resultSet.getString(CATEGORY_ID_COLUMN));
+      }
+      logger.info("Transaction saved successfully ✅");
+    } catch (SQLException e) {
+      logger.error("Failed to save transaction ❌: {}", e.getMessage());
+    } finally {
+      closeResources(connection, statement, resultSet);
+    }
     return null;
   }
 
