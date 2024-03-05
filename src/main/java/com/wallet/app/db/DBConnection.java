@@ -1,11 +1,10 @@
 package com.wallet.app.db;
 
 import com.wallet.app.exception.DatabaseConnectionException;
-import org.springframework.context.annotation.Configuration;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class DBConnection {

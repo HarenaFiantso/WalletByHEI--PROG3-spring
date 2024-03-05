@@ -12,6 +12,8 @@ public interface CrudRepository<T> {
 
   T save(T toSave);
 
+  T update(T toUpdate);
+
   T delete(String toDelete);
 
   void closeResources(Connection connection, PreparedStatement statement, ResultSet resultSet);

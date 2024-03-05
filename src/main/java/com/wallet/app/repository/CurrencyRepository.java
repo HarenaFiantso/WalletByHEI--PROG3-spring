@@ -26,6 +26,9 @@ public class CurrencyRepository implements CrudRepository<Currency> {
   private static final String INSERT_QUERY =
       "INSERT INTO currency (currency_name, currency_code) VALUES (CAST(? AS currency_name), CAST(?"
           + " AS currency_code)) RETURNING *";
+  private static final String UPDATE_QUERY =
+      "UPDATE currency SET currency_name = CAST(? AS currency_name), currency_code = CAST(? AS"
+          + " currency_code) WHERE currency_id = ? RETURNING *";
   private static final String DELETE_QUERY = "DELETE FROM currency WHERE currency_id::text = ?";
 
   @Override
@@ -119,6 +122,38 @@ public class CurrencyRepository implements CrudRepository<Currency> {
       closeResources(connection, statement, resultSet);
     }
     return null;
+  }
+
+  @Override
+  public Currency update(Currency toUpdate) {
+    Currency currency = null;
+    Connection connection = null;
+    PreparedStatement statement = null;
+    ResultSet resultSet = null;
+
+    try {
+      connection = DBConnection.getConnection();
+
+      statement = connection.prepareStatement(UPDATE_QUERY);
+      statement.setString(1, toUpdate.getCurrencyName());
+      statement.setString(2, toUpdate.getCurrencyCode());
+      statement.setString(3, toUpdate.getCurrencyId());
+
+      resultSet = statement.executeQuery();
+      if (resultSet.next()) {
+        currency =
+            new Currency(
+                resultSet.getString(CURRENCY_ID_COLUMN),
+                resultSet.getString(CURRENCY_NAME_COLUMN),
+                resultSet.getString(CURRENCY_CODE_COLUMN));
+      }
+
+      logger.info("Currency deleted successfully ✅");
+    } catch (SQLException e) {
+      logger.error("Failed to update currency ❌: {}", e.getMessage());
+    }
+
+    return currency;
   }
 
   @Override
