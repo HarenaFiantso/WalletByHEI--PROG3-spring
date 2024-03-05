@@ -28,7 +28,7 @@ public class CurrencyRepository implements CrudRepository<Currency> {
           + " AS currency_code)) RETURNING *";
   private static final String UPDATE_QUERY =
       "UPDATE currency SET currency_name = CAST(? AS currency_name), currency_code = CAST(? AS"
-          + " currency_code) WHERE currency_id = ? RETURNING *";
+          + " currency_code) WHERE currency_id::text = ? RETURNING *";
   private static final String DELETE_QUERY = "DELETE FROM currency WHERE currency_id::text = ?";
 
   @Override
