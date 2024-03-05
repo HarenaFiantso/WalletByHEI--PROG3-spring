@@ -20,6 +20,7 @@ public class CategoryRepository implements CrudRepository<Category> {
   private static final String CATEGORY_ID_COLUMN = "category_id";
   private static final String CATEGORY_NAME_COLUMN = "category_name";
 
+  private static final String UPDATE_QUERY = "UPDATE category SET category_name = ? WHERE category_id = ?";
   private static final String DELETE_QUERY = "DELETE FROM category WHERE category_id = ?";
   @Override
   public Category findById(String toFind) {
@@ -38,7 +39,33 @@ public class CategoryRepository implements CrudRepository<Category> {
 
   @Override
   public Category update(Category toUpdate) {
-    return null;
+    Category category = null;
+    Connection connection = null;
+    PreparedStatement statement = null;
+    ResultSet resultSet = null;
+
+    try {
+      connection = DBConnection.getConnection();
+
+      statement = connection.prepareStatement(UPDATE_QUERY);
+      statement.setString(1, toUpdate.getCategoryName());
+
+      resultSet = statement.executeQuery();
+      if (resultSet.next()) {
+        category =
+            new Category(
+                resultSet.getString(CATEGORY_ID_COLUMN),
+                resultSet.getString(CATEGORY_NAME_COLUMN));
+      }
+
+      logger.info("category updated successfully ✅");
+    } catch (SQLException e) {
+      logger.error("Failed to update category ❌: {}", e.getMessage());
+    } finally {
+      closeResources(connection, statement, resultSet);
+    }
+
+    return category;
   }
 
   @Override
