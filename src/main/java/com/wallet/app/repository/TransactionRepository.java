@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -44,7 +45,37 @@ public class TransactionRepository implements CrudRepository<Transaction> {
 
   @Override
   public List<Transaction> findAll() {
-    return null;
+    List<Transaction> transactions = new ArrayList<>();
+    Connection connection = null;
+    PreparedStatement statement = null;
+    ResultSet resultSet = null;
+
+    try {
+      connection = DBConnection.getConnection();
+
+      statement = connection.prepareStatement(SELECT_ALL_QUERY);
+      resultSet = statement.executeQuery();
+
+      while (resultSet.next()) {
+        Transaction transaction =
+            new Transaction(
+                resultSet.getString(TRANSACTION_ID_COLUMN),
+                resultSet.getTimestamp(TRANSACTION_DATE_COLUMN),
+                resultSet.getString(TRANSACTION_TYPE_COLUMN),
+                resultSet.getDouble(AMOUNT_COLUMN),
+                resultSet.getString(LABEL_COLUMN),
+                resultSet.getString(ACCOUNT_ID_COLUMN),
+                resultSet.getString(CATEGORY_ID_COLUMN));
+
+        transactions.add(transaction);
+      }
+      logger.info("Transactions retrieved successfully ✅");
+    } catch (SQLException e) {
+      logger.error("Failed to retrieve transactions ❌: {}", e.getMessage());
+    } finally {
+      closeResources(connection, statement, resultSet);
+    }
+    return transactions;
   }
 
   @Override
