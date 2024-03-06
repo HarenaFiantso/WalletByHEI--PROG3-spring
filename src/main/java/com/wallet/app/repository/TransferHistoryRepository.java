@@ -1,18 +1,16 @@
 package com.wallet.app.repository;
 
 import com.wallet.app.db.DBConnection;
-import com.wallet.app.db.entity.Account;
 import com.wallet.app.db.entity.TransferHistory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Repository;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class TransferHistoryRepository implements CrudRepository<TransferHistory> {
@@ -36,7 +34,35 @@ public class TransferHistoryRepository implements CrudRepository<TransferHistory
 
   @Override
   public TransferHistory findById(String toFind) {
-    return null;
+    TransferHistory transferHistory = null;
+    Connection connection = null;
+    PreparedStatement statement = null;
+    ResultSet resultSet = null;
+
+    try {
+      connection = DBConnection.getConnection();
+
+      statement = connection.prepareStatement(SELECT_BY_ID_QUERY);
+      statement.setString(1, toFind);
+
+      resultSet = statement.executeQuery();
+      if (resultSet.next()) {
+        transferHistory =
+            new TransferHistory(
+                resultSet.getString(TRANSFER_HISTORY_ID_COLUMN),
+                resultSet.getTimestamp(TRANSFER_DATE_COLUMN),
+                resultSet.getString(DEBIT_TRANSACTION_ID_COLUMN),
+                resultSet.getString(CREDIT_TRANSACTION_ID_COLUMN));
+      }
+
+      logger.info("Transfer history retrieved successfully ✅");
+    } catch (SQLException e) {
+      logger.error("Failed to retrieve transfer history ❌: {}", e.getMessage());
+    } finally {
+      closeResources(connection, statement, resultSet);
+    }
+
+    return transferHistory;
   }
 
   @Override
@@ -173,7 +199,8 @@ public class TransferHistoryRepository implements CrudRepository<TransferHistory
   }
 
   @Override
-  public void closeResources(Connection connection, PreparedStatement statement, ResultSet resultSet) {
+  public void closeResources(
+      Connection connection, PreparedStatement statement, ResultSet resultSet) {
     try {
       if (resultSet != null) {
         resultSet.close();
