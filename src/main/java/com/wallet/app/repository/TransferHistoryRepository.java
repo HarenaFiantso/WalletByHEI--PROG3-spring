@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -40,7 +41,34 @@ public class TransferHistoryRepository implements CrudRepository<TransferHistory
 
   @Override
   public List<TransferHistory> findAll() {
-    return null;
+    List<TransferHistory> transferHistories = new ArrayList<>();
+    Connection connection = null;
+    PreparedStatement statement = null;
+    ResultSet resultSet = null;
+
+    try {
+      connection = DBConnection.getConnection();
+
+      statement = connection.prepareStatement(SELECT_ALL_QUERY);
+      resultSet = statement.executeQuery();
+
+      while (resultSet.next()) {
+        TransferHistory transferHistory =
+            new TransferHistory(
+                resultSet.getString(TRANSFER_HISTORY_ID_COLUMN),
+                resultSet.getTimestamp(TRANSFER_DATE_COLUMN),
+                resultSet.getString(DEBIT_TRANSACTION_ID_COLUMN),
+                resultSet.getString(CREDIT_TRANSACTION_ID_COLUMN));
+
+        transferHistories.add(transferHistory);
+      }
+      logger.info("transfer histories retrieved successfully ✅");
+    } catch (SQLException e) {
+      logger.error("Failed to retrieve transfer histories ❌: {}", e.getMessage());
+    } finally {
+      closeResources(connection, statement, resultSet);
+    }
+    return transferHistories;
   }
 
   @Override
