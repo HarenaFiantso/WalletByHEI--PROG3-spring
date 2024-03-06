@@ -45,6 +45,33 @@ public class TransferHistoryRepository implements CrudRepository<TransferHistory
 
   @Override
   public TransferHistory save(TransferHistory toSave) {
+    Connection connection = null;
+    PreparedStatement statement = null;
+    ResultSet resultSet = null;
+
+    try {
+      connection = DBConnection.getConnection();
+
+      statement = connection.prepareStatement(INSERT_QUERY);
+      statement.setTimestamp(1, toSave.getTransferDate());
+      statement.setString(2, toSave.getDebitTransactionId());
+      statement.setString(3, toSave.getCreditTransactionId());
+
+      resultSet = statement.executeQuery();
+
+      if (resultSet.next()) {
+        return new TransferHistory(
+            resultSet.getString(TRANSFER_HISTORY_ID_COLUMN),
+            resultSet.getTimestamp(TRANSFER_DATE_COLUMN),
+            resultSet.getString(DEBIT_TRANSACTION_ID_COLUMN),
+            resultSet.getString(CREDIT_TRANSACTION_ID_COLUMN));
+      }
+      logger.info("Transfer history saved successfully ✅");
+    } catch (SQLException e) {
+      logger.error("Failed to save transfer history ❌: {}", e.getMessage());
+    } finally {
+      closeResources(connection, statement, resultSet);
+    }
     return null;
   }
 
