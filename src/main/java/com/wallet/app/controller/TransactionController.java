@@ -1,13 +1,11 @@
 package com.wallet.app.controller;
 
-import com.wallet.app.db.entity.Category;
 import com.wallet.app.db.entity.Transaction;
 import com.wallet.app.service.TransactionService;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @AllArgsConstructor
