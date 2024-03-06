@@ -1,13 +1,10 @@
 package com.wallet.app.service;
 
 import com.wallet.app.db.entity.Category;
-import com.wallet.app.db.entity.Currency;
 import com.wallet.app.repository.CategoryRepository;
-import com.wallet.app.repository.CurrencyRepository;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @AllArgsConstructor
